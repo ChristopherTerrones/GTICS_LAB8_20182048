@@ -9,5 +9,7 @@ import java.util.List;
 
 @Repository
 public interface EventoRepository extends JpaRepository<Evento, Integer> {
-    List<Evento> findByFecha(LocalDate fecha);
+    List<Evento> findAllByOrderByFechaAsc();
+    List<Evento> findByFechaGreaterThanEqualOrderByFechaAsc(LocalDate fecha);
+
 }

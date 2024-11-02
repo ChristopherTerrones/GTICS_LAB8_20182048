@@ -30,31 +30,33 @@ public class EventoController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<HashMap<String, Object>> listarEventos(@RequestParam(value = "fecha",required = false) String fechaStr) {
+    public ResponseEntity<HashMap<String, Object>> listarEventos(@RequestParam(value = "fecha", required = false) String fechaStr) {
         HashMap<String, Object> respuesta = new HashMap<>();
-        if(fechaStr==null){
-            respuesta.put("result","error");
-            respuesta.put("msg","Ingrese una fecha");
-            return ResponseEntity.badRequest().body(respuesta);
-        }else {
-            try{
+        List<Evento> eventos;
+
+        try {
+            if (fechaStr == null) {
+                eventos = eventoRepository.findAllByOrderByFechaAsc();
+            } else {
                 LocalDate fecha = LocalDate.parse(fechaStr);
-                List<Evento> eventos;
-                eventos = eventoRepository.findByFecha(fecha);
-                if (!eventos.isEmpty()) {
-                    respuesta.put("result", "ok");
-                    respuesta.put("eventos", eventos);
-                } else {
-                    respuesta.put("result", "no existen eventos");
-                }
-                return ResponseEntity.ok(respuesta);
-            }catch (DateTimeParseException ex){
-                respuesta.put("result","error");
-                respuesta.put("msg","El parámetro ingresado debe ser una fecha");
-                return ResponseEntity.badRequest().body(respuesta);
+                eventos = eventoRepository.findByFechaGreaterThanEqualOrderByFechaAsc(fecha);
             }
+
+            if (!eventos.isEmpty()) {
+                respuesta.put("result", "ok");
+                respuesta.put("eventos", eventos);
+            } else {
+                respuesta.put("result", "no existen eventos");
+            }
+
+            return ResponseEntity.ok(respuesta);
+        } catch (DateTimeParseException ex) {
+            respuesta.put("result", "error");
+            respuesta.put("msg", "El parámetro ingresado debe ser una fecha válida");
+            return ResponseEntity.badRequest().body(respuesta);
         }
     }
+
 
     @PostMapping(value = {"", "/"})
     public ResponseEntity<HashMap<String, Object>> guardarProducto(
