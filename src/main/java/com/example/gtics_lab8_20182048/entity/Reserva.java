@@ -15,7 +15,7 @@ public class Reserva {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "ideventos", nullable = false)
+    @JoinColumn(name = "idevento", nullable = false)
     private Evento evento;
 
     @Column(name = "nombre", length = 45)
